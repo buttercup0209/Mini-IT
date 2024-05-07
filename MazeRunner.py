@@ -9,4 +9,4 @@ window_title = pygame.display.set_caption("Maze Runner")
 window = pygame.display.set_mode((window_width, window_height))
 
 
-
+pygame.quit ()
