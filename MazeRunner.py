@@ -3,6 +3,10 @@ import time
 import random 
 import tkinter as tk
 from tkinter import *
+import json 
+import os 
+
+DATA_FILENAME = "data.json"
 
 def login(): 
     root = tk.Tk()
@@ -11,7 +15,7 @@ def login():
     root.columnconfigure(0, weight= 1)
     root.columnconfigure(1, weight= 1)
     root.columnconfigure(2, weight= 1)
-
+    
     username = Label(root, text = "Username")
     username.grid(row=0, column=1)
     
@@ -23,17 +27,165 @@ def login():
     
     PwEntry = Entry(root, width=20, borderwidth= 5)
     PwEntry.grid(row=3, column=1)
-
+    
+    invalid_user = Label(root, text= "")
+    invalid_user.grid(row=9, column=1)
+    
     def clicked() :
-        Login = Button(root, text = "Log In", fg = "black", command=clicked)
-        Login.grid(row= 5, column=1)
-
+        with open(DATA_FILENAME) as json_file:
+            data = json.load(json_file)
+            for x in data:
+                if (x['username'] == UserEntry.get()):
+                    if(x['password'] == PwEntry.get()):
+                        print("success")
+                        root.destroy()
+                    else :
+                        invalid_user.config(text="Invalid Password")
+                else :
+                    invalid_user.config(text="Invalid Username")
+                        
+        
+    Login = Button(root, text = "Log In", fg = "black", command=clicked)
+    Login.grid(row= 5, column=1)
+    
     def back() :
         root.destroy()
         home()
+        
+    back_btn = Button(root, text = "Back", fg = "black", command=back)
+    back_btn.grid(row= 5, column=2)
+    
+    root.mainloop()
 
-        back_btn = Button(root, text = "Back", fg = "black", command=back)
-        back_btn.grid(row= 5, column=2)
+def age() :
+    root = tk.Tk()
+    root.title("Maze Runner | Register")
+    root.geometry('350x200')
+    root.columnconfigure(0, weight= 1)
+    root.columnconfigure(1, weight= 1)
+    root.columnconfigure(2, weight= 1)
+    
+    age = Label(root, text = "Enter Age :")
+    age.grid(row=0, column=1)
+    age_scale = Scale(root, from_= 0, to=99, orient=HORIZONTAL)
+    age_scale.grid(row=2, column=0, columnspan=3, sticky=W+E)
+    
+    def clicked():
+        print("Age :", age_scale.get())
+        root.destroy()
+        register()
+    
+    Enter = Button(root, text = "Enter", fg = "black", command=clicked)
+    Enter.grid(row= 5, column=1)
+    
+    def back() :
+        root.destroy()
+        home()
+        
+    back_btn = Button(root, text = "Back", fg = "black", command=back)
+    back_btn.grid(row= 5, column=2)
+        
+    root.mainloop()
+        
+def register() :
+    root = tk.Tk()
+    root.title("Maze Runner | Register")
+    root.geometry('350x200')
+    root.columnconfigure(0, weight= 1)
+    root.columnconfigure(1, weight= 1)
+    root.columnconfigure(2, weight= 1)
+    
+    Username = Label(root, text = "Create Username")
+    Username.grid(row=0, column=1)
+    
+    UserEntry = Entry(root, width=20, borderwidth= 5)
+    UserEntry.grid(row=1, column=1)
+    
+    Password = Label(root, text = "Create Password")
+    Password.grid(row=2, column=1)
+    
+    PwEntry = Entry(root, width=20, borderwidth= 5)
+    PwEntry.grid(row=3, column=1)
+    
+    invalid_user = Label(root, text= "")
+    invalid_user.grid(row=9, column=1)
+    
+    def clicked() :
+        if (UserEntry.get() == "" or UserEntry.get() == " "):
+            invalid_user.config(text="Username Invalid!")
+        elif (PwEntry.get() == "" or PwEntry.get() == " "):
+            invalid_user.config(text="Password Invalid!")
+        elif (len(PwEntry.get()) < 10):
+            invalid_user.config(text="You need at least 10 characters")
+        else:
+            exists = False
+            
+            with open(DATA_FILENAME) as json_file:
+                data = json.load(json_file)
+
+                for x in data:
+                    if (x['username'] == UserEntry.get()):
+                        exists = True
+            
+            if (exists):
+                invalid_user.config(text="Username already exist!")
+            else:
+                dictionary = {
+                    "username": UserEntry.get(),
+                    "password": PwEntry.get()
+                }
+
+                a = []
+                if not os.path.isfile(DATA_FILENAME):
+                    a.append(dictionary)
+                    with open(DATA_FILENAME, mode='w') as f:
+                        f.write(json.dumps(a, indent=2))
+                else:
+                    with open(DATA_FILENAME) as feedsjson:
+                        feeds = json.load(feedsjson)
+
+                    feeds.append(dictionary)
+                    with open(DATA_FILENAME, mode='w') as f:
+                        f.write(json.dumps(feeds, indent=2))
+                
+                invalid_user.config(text="Registration Successful")
+                root.destroy()
+                register_success()
+    
+    Register = Button(root, text = "Register", fg = "black", command=clicked)
+    Register.grid(row= 8, column=1)
+    
+    def back() :
+        root.destroy()
+        age()
+        
+    back_btn = Button(root, text = "Back", fg = "black", command=back)
+    back_btn.grid(row= 8, column=2)
+    
+    root.mainloop()
+    
+def register_success() :
+    root = tk.Tk()
+    root.title("Maze Runner | Register Success")
+    root.geometry('350x200')
+    root.columnconfigure(0, weight= 1)
+    root.columnconfigure(1, weight= 1)
+    root.columnconfigure(2, weight= 1)
+
+    Successful = Label(root, text = "Registration Successful")
+    Successful.grid(row=3, column=1)
+    
+    Successful = Label(root, text = "Login to continue")
+    Successful.grid(row=4, column=1)
+    
+    def clicked() :
+        root.destroy()
+        login()
+        
+    Login = Button(root, text = "Log In", fg = "black", command=clicked)
+    Login.grid(row= 6, column=1)
+    
+    root.mainloop()
 
 def home():
     root = tk.Tk()
