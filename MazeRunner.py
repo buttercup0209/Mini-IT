@@ -1,34 +1,42 @@
 import pygame
-import sys
+
 pygame.init()
-WIDTH = 800
-HEIGHT = 600
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
-CELL-SIZE = 36
-maze = [
-    [1, 1, 1, 1, 1, 1, 1, 1]
-    [2, 0, 0, 0, 0, 1, 0, 3]
-    [1, 1, 1, 0, 0, 0, 0, 1]
-    [1, 0, 0, 0, 1, 1, 0, 1]
-    [1, 1, 1, 0, 1, 1, 0, 1]
-    [1, 0, 0, 0, 0, 0, 0, 1]
-    [1, 1, 1, 1, 1, 1, 1, 1]
+
+screen_width, screen_height = 800, 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Room Example")
+
+white = (255, 255, 255)
+gray = (200, 200, 200)
+
+room_width, room_height = 600, 400
+wall_thickness = 10
+
+walls = [
+    pygame.Rect(0, 0, room_width, wall_thickness), 
+    pygame.Rect(0, 0, wall_thickness, room_height),  
+    pygame.Rect(room_width - wall_thickness, 0, wall_thickness, room_height),  
+    pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness),  
 ]
-player_pos = [1, 0]
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("Maze Runner")
-while True;
-    screen.fill(WHITE)
-    for y in range(len(maze));
-        for x in range(len(maze[y]));
-            if maze[y][x] == 1;
-                pygame.draw.rect(screen, BLUE, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE))
 
-for event in pygame.event.get();
-    if event.type == pygame.QUIT;
-        pygame.quit()
-        sys.exit()
 
-pygame.display.flip()
+ceiling = pygame.Rect(0, 0, room_width, wall_thickness)
+floor = pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness)
 
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    
+    screen.fill(white)
+    pygame.draw.rect(screen, gray, ceiling)
+    pygame.draw.rect(screen, gray, floor)
+    for wall in walls:
+        pygame.draw.rect(screen, gray, wall)
+
+    pygame.display.flip()
+
+pygame.quit()
