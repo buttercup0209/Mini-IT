@@ -4,10 +4,10 @@ pygame.init()
 
 screen_width, screen_height = 800, 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Room Example")
+pygame.display.set_caption("Maze Runner")
 
 white = (255, 255, 255)
-gray = (200, 200, 200)
+gray = (254, 254, 254)
 
 room_width, room_height = 600, 400
 wall_thickness = 10
