@@ -11,7 +11,7 @@ pygame.display.set_caption("Maze Runner")
 white = (255, 255, 255)
 gray = (200, 200, 200)
 
-room_width, room_height = 600, 400
+room_width, room_height = 800, 600
 wall_thickness = 10
 
 walls = [
