@@ -4,22 +4,41 @@ import random
 
 pygame.init()
 
-clock = pygame.time.Clock()
-FPS = 60 
+screen_width, screen_height = 800, 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Maze Runner")
 
-window_width = 1000
-window_height = 600
-window_title = pygame.display.set_caption("Maze Runner")
-window = pygame.display.set_mode((window_width, window_height))
+white = (255, 255, 255)
+gray = (200, 200, 200)
 
-run = True
-while run : 
-    clock.tick(FPS)
+room_width, room_height = 600, 400
+wall_thickness = 10
+
+walls = [
+    pygame.Rect(0, 0, room_width, wall_thickness), 
+    pygame.Rect(0, 0, wall_thickness, room_height),  
+    pygame.Rect(room_width - wall_thickness, 0, wall_thickness, room_height),  
+    pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness),  
+]
+
+
+ceiling = pygame.Rect(0, 0, room_width, wall_thickness)
+floor = pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness)
+
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
     
-    for event in pygame.event.get() :
-        if event.type == pygame.QUIT :
-            run = False
-            
-    pygame.display.update()
-    
-pygame.quit() 
+    screen.fill(white)
+    pygame.draw.rect(screen, gray, ceiling)
+    pygame.draw.rect(screen, gray, floor)
+    for wall in walls:
+        pygame.draw.rect(screen, gray, wall)
+
+    pygame.display.flip()
+
+pygame.quit()
