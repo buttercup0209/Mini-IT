@@ -35,14 +35,10 @@ def login():
         with open(DATA_FILENAME) as json_file:
             data = json.load(json_file)
             for x in data:
-                if (x['username'] == UserEntry.get()):
-                    if(x['password'] == PwEntry.get()):
-                        print("success")
+                if (x['username'] == UserEntry.get() and x['password'] == PwEntry.get()):
                         root.destroy()
-                    else :
-                        invalid_user.config(text="Invalid Password")
                 else :
-                    invalid_user.config(text="Invalid Username")
+                    invalid_user.config(text="Your username or password may be incorrect!")
                         
         
     Login = Button(root, text = "Log In", fg = "black", command=clicked)
