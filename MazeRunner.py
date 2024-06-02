@@ -233,6 +233,13 @@ def credit() :
     modules = Label(root, text = "Tkinter\nPygame" )
     modules.grid(column=1, row=21)
 
+    def back() :
+        root.destroy()
+        menu()
+        
+    back_btn = Button(root, text = "Back", fg = "black", command=back)
+    back_btn.grid(column=2, row= 23)
+
 def menu() :
     root = tk.Tk()
     root.title("Maze Runner")
