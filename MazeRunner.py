@@ -194,44 +194,20 @@ def credit() :
     creators = Label(root, text = "Creators" )
     creators.grid(column=1, row=0)
 
-    girin = Label(root, text = "Girindrashinie" )
-    girin.grid(column=1, row=1)
-
-    kash = Label(root, text = "Kashvinna Anne" )
-    kash.grid(column=1, row=2)
-
-    liora = Label(root, text = "Mithraa Liora" )
-    liora.grid(column=1, row=3)
-
-    tara = Label(root, text = "Tarani Devi" )
-    tara.grid(column=1, row=4)
+    creators = Label(root, text = "Girindrashinie\nKashvinna Anne\nMithraa Liora\nTarani Devi" )
+    creators.grid(column=1, row=2)
 
     designers = Label(root, text = "Game Design and Graphics" )
     designers.grid(column=1, row=5)
 
-    kash = Label(root, text = "Kashvinna Anne" )
-    kash.grid(column=1, row=6)
-
-    liora = Label(root, text = "Mithraa Liora" )
-    liora.grid(column=1, row=7)
-
-    tara = Label(root, text = "Tarani Devi" )
-    tara.grid(column=1, row=8)
+    designers = Label(root, text = "Kashvinna Anne\nMithraa Liora\nTarani Devi" )
+    designers.grid(column=1, row=6)
 
     programmers = Label(root, text = "Programmers" )
     programmers.grid(column=1, row=9)
 
-    girin = Label(root, text = "Girindrashinie" )
-    girin.grid(column=1, row=10)
-
-    kash = Label(root, text = "Kashvinna Anne" )
-    kash.grid(column=1, row=11)
-
-    liora = Label(root, text = "Mithraa Liora" )
-    liora.grid(column=1, row=12)
-
-    tara = Label(root, text = "Tarani Devi" )
-    tara.grid(column=1, row=13)
+    programmers = Label(root, text = "Girindrashinie\nKashvinna Anne\nMithraa Liora\nTarani Devi" )
+    programmers.grid(column=1, row=10)
 
     mns = Label(root, text = "Music and Sound" )
     mns.grid(column=1, row=14)
@@ -254,11 +230,8 @@ def credit() :
     modules = Label(root, text = "Modules" )
     modules.grid(column=1, row=20)
 
-    tkinter = Label(root, text = "Tkinter" )
-    tkinter.grid(column=1, row=21)
-
-    pyg = Label(root, text = "Pygame" )
-    pyg.grid(column=1, row=22)
+    modules = Label(root, text = "Tkinter\nPygame" )
+    modules.grid(column=1, row=21)
 
 def menu() :
     root = tk.Tk()
