@@ -37,7 +37,7 @@ def login():
             for x in data:
                 if (x['username'] == UserEntry.get() and x['password'] == PwEntry.get()):
                         root.destroy()
-                        start()
+                        menu()
                 else :
                     invalid_user.config(text="Your username or password may be incorrect!")
         
@@ -183,22 +183,127 @@ def register_success() :
     
     root.mainloop()
 
-def start() :
-    pygame.init()
+def credit() :
+    root = tk.Tk()
+    root.title("Maze Runner")
+    root.geometry('1000x600')
+    root.columnconfigure(0, weight= 1)
+    root.columnconfigure(1, weight= 1)
+    root.columnconfigure(2, weight= 1)
 
-    screen_width, screen_height = 800, 600
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Maze Runner")
+    creators = Label(root, text = "Creators" )
+    creators.grid(column=1, row=0)
 
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    girin = Label(root, text = "Girindrashinie" )
+    girin.grid(column=1, row=1)
 
-    pygame.display.flip()
+    kash = Label(root, text = "Kashvinna Anne" )
+    kash.grid(column=1, row=2)
+
+    liora = Label(root, text = "Mithraa Liora" )
+    liora.grid(column=1, row=3)
+
+    tara = Label(root, text = "Tarani Devi" )
+    tara.grid(column=1, row=4)
+
+    designers = Label(root, text = "Game Design and Graphics" )
+    designers.grid(column=1, row=5)
+
+    kash = Label(root, text = "Kashvinna Anne" )
+    kash.grid(column=1, row=6)
+
+    liora = Label(root, text = "Mithraa Liora" )
+    liora.grid(column=1, row=7)
+
+    tara = Label(root, text = "Tarani Devi" )
+    tara.grid(column=1, row=8)
+
+    programmers = Label(root, text = "Programmers" )
+    programmers.grid(column=1, row=9)
+
+    girin = Label(root, text = "Girindrashinie" )
+    girin.grid(column=1, row=10)
+
+    kash = Label(root, text = "Kashvinna Anne" )
+    kash.grid(column=1, row=11)
+
+    liora = Label(root, text = "Mithraa Liora" )
+    liora.grid(column=1, row=12)
+
+    tara = Label(root, text = "Tarani Devi" )
+    tara.grid(column=1, row=13)
+
+    mns = Label(root, text = "Music and Sound" )
+    mns.grid(column=1, row=14)
+
+    girin = Label(root, text = "Girindrashinie" )
+    girin.grid(column=1, row=15)
+
+    cd = Label(root, text = "Character Design" )
+    cd.grid(column=1, row=16)
+
+    cd = Label(root, text = "Copilot" )
+    cd.grid(column=1, row=17)
+
+    lang = Label(root, text = "Programming Language" )
+    lang.grid(column=1, row=18)
+
+    py = Label(root, text = "Python (Not the snake)" )
+    py.grid(column=1, row=19)
+
+    modules = Label(root, text = "Modules" )
+    modules.grid(column=1, row=20)
+
+    tkinter = Label(root, text = "Tkinter" )
+    tkinter.grid(column=1, row=21)
+
+    pyg = Label(root, text = "Pygame" )
+    pyg.grid(column=1, row=22)
+
+def menu() :
+    root = tk.Tk()
+    root.title("Maze Runner")
+    root.geometry('1000x600')
+    root.columnconfigure(0, weight= 1)
+    root.columnconfigure(1, weight= 1)
+    root.columnconfigure(2, weight= 1)
+
+    menu = Label(root, text = "Main Menu" )
+    menu.grid(column=0, row=1)
+
+    def clicked() :
+        root.destroy()
+            
+    start = Button(root, text = "Play", fg = "black", command=clicked)
+    start.grid(column=0, row=2)
+
+    def clicked() :
+        root.destroy()
+
+    settings = Button(root, text = "Settings", fg = "black", command=clicked)
+    settings.grid(column=0, row=5)
     
-    pygame.quit()
+    def clicked() :
+        root.destroy()
+
+    option = Button(root, text = "Option", fg = "black", command=clicked)
+    option.grid(column=0, row=3)
+
+    def clicked() :
+        root.destroy()
+        credit()
+
+    credits = Button(root, text = "Credits", fg = "black", command=clicked)
+    credits.grid(column=0, row=4)
+
+
+    def clicked() :
+        root.destroy()
+
+    quit = Button(root, text = "Quit", fg = "black", command=clicked)
+    quit.grid(column=0, row=6)
+
+    root.mainloop()
 
 def game():
     pygame.init()
