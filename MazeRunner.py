@@ -28,12 +28,12 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.image = pygame.image.load(os.path.join('images', 'Ground (78x58).png')).convert_alpha()
+        self.image = pygame.image.load(os.path.join('images','Ground (78x58).png')).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = (room_width // 2, room_height//2)
 
     def update(self):
-        keys = pygame.key.get_pressed
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rect.x -= 5
         if keys[pygame.K_RIGHT]:
