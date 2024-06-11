@@ -3,14 +3,14 @@ import os
 
 pygame.init()
 
-screen_width, screen_height = 800, 600
+screen_width, screen_height = 1000, 700
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Maze Runner")
 
 white = (255, 255, 255)
 gray = (255, 255, 255)
 
-room_width, room_height = 600, 400
+room_width, room_height = 1000, 700
 wall_thickness = 10
 
 walls = [
@@ -24,11 +24,16 @@ walls = [
 ceiling = pygame.Rect(0, 0, room_width, wall_thickness)
 floor = pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness)
 
+hall = pygame.image.load(os.path.join('images', '3rd.jpeg')).convert()
+hall = pygame.transform.scale(hall, (room_width, room_height))
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.image = pygame.image.load(os.path.join('images','Ground (78x58).png')).convert_alpha()
+        original_image = pygame.image.load(os.path.join('images', 'girl.png')).convert_alpha()
+        self.image = pygame.transform.scale(original_image, (300,300))
         self.rect = self.image.get_rect()
         self.rect.center = (room_width // 2, room_height//2)
 
@@ -53,13 +58,17 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
     all_sprites.update()
     
     screen.fill(white)
     pygame.draw.rect(screen, gray, ceiling)
     pygame.draw.rect(screen, gray, floor)
+
+    screen.blit(hall, (0,0))
     for wall in walls:
         pygame.draw.rect(screen, gray, wall)
+
     all_sprites.draw(screen)
 
     pygame.display.flip()
