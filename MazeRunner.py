@@ -1,19 +1,16 @@
 import pygame
-import sys 
-import os
-import time 
-import random 
+import os 
 
 pygame.init()
 
-screen_width, screen_height = 800, 600
+screen_width, screen_height = 1000, 700
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Maze Runner")
 
 white = (255, 255, 255)
-gray = (200, 200, 200)
+gray = (255, 255, 255)
 
-room_width, room_height = 800, 600
+room_width, room_height = 1000, 700
 wall_thickness = 10
 
 walls = [
@@ -27,16 +24,19 @@ walls = [
 ceiling = pygame.Rect(0, 0, room_width, wall_thickness)
 floor = pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness)
 
+hall = pygame.image.load(os.path.join('Assets', 'Pixel room.png')).convert()
+hall = pygame.transform.scale(hall, (room_width, room_height))
+
 class Player(pygame.sprite.Sprite):
     def _init_(self):
         super()._init_()
-
-        self.image = pygame.image.load(os.path.join('images', 'Ground (78x58).png')).convert_alpha()
+        
+        self.image = pygame.image.load("./Assets/girl.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.center = (room_width // 2, room_height//2)
+        self.rect.center = (room_width // 2,room_height//2)
 
     def update(self):
-        keys = pygame.key.get_pressed
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rect.x -= 5
         if keys[pygame.K_RIGHT]:
@@ -61,6 +61,8 @@ while running:
     screen.fill(white)
     pygame.draw.rect(screen, gray, ceiling)
     pygame.draw.rect(screen, gray, floor)
+    
+    screen.blit(hall,(0,0))
     for wall in walls:
         pygame.draw.rect(screen, gray, wall)
     all_sprites.draw(screen)
