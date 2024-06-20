@@ -3,286 +3,390 @@ import time
 import random 
 import tkinter as tk
 from tkinter import *
+from tkinter import ttk
 import json 
 import os 
+from pygame.locals import *
+from pygame import mixer
+from PIL import Image, ImageTk
+from tkinter import Label, Entry, Button
+from tkinter import Button
 
 DATA_FILENAME = "data.json"
 
 def login(): 
     root = tk.Tk()
     root.title("Maze Runner | Login")
-    root.geometry('350x200')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
+
+    bg_image = Image.open("Assets/login_bg.jpg")
+    bg_image_width, bg_image_height = bg_image.size
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
     
-    username = Label(root, text = "Username")
-    username.grid(row=0, column=1)
+    bg_photo = ImageTk.PhotoImage(bg_image)
     
-    UserEntry = Entry(root, width=20, borderwidth= 5)
-    UserEntry.grid(row=1, column=1)
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
     
-    Password = Label(root, text = "Password")
-    Password.grid(row=2, column=1)
+    pixel_font = ("Press Start 2P", 12)
     
-    PwEntry = Entry(root, width=20, borderwidth= 5)
-    PwEntry.grid(row=3, column=1)
-    
-    invalid_user = Label(root, text= "")
-    invalid_user.grid(row=9, column=1)
+    username_label = Label(root, text="Username", font=pixel_font, bg='white', fg='black')
+    username_entry = Entry(root, width=20, borderwidth=5, font=pixel_font)
+    password_label = Label(root, text="Password", font=pixel_font, bg='white', fg='black')
+    password_entry = Entry(root, width=20, borderwidth=5, font=pixel_font, show="*")
+    invalid_user_label = Label(root, text="", font=pixel_font, fg='red')
     
     def clicked() :
         with open(DATA_FILENAME) as json_file:
             data = json.load(json_file)
             for x in data:
-                if (x['username'] == UserEntry.get() and x['password'] == PwEntry.get()):
+                if (x['username'] == username_entry.get() and x['password'] == password_entry.get()):
                         root.destroy()
                         menu()
+                        return
                 else :
-                    invalid_user.config(text="Your username or password may be incorrect!")
-        
-    Login = Button(root, text = "Log In", fg = "black", command=clicked)
-    Login.grid(row= 5, column=1)
+                    invalid_user_label.config(text="Your username or password may be incorrect!")
     
     def back() :
         root.destroy()
         home()
         
-    back_btn = Button(root, text = "Back", fg = "black", command=back)
-    back_btn.grid(row= 5, column=2)
+    login_button = Button(root, text="Log In", fg="black", command=clicked, font=pixel_font, bg='white')
+    back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
+
+    # Position the widgets on the canvas
+    canvas.create_window(bg_image_width//2, 50, window=username_label)
+    canvas.create_window(bg_image_width//2, 90, window=username_entry)
+    canvas.create_window(bg_image_width//2, 130, window=password_label)
+    canvas.create_window(bg_image_width//2, 170, window=password_entry)
+    canvas.create_window(bg_image_width//2, 210, window=invalid_user_label)
+    canvas.create_window(bg_image_width//2 - 60, 250, window=back_button)
+    canvas.create_window(bg_image_width//2 + 60, 250, window=login_button)
     
     root.mainloop()
 
 def age() :
     root = tk.Tk()
     root.title("Maze Runner | Register")
-    root.geometry('350x200')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
+
+    bg_image = Image.open("Assets/login_bg.jpg")
+    bg_image_width, bg_image_height = bg_image.size
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
     
-    age = Label(root, text = "Enter Age :")
-    age.grid(row=0, column=1)
-    age_scale = Scale(root, from_= 0, to=99, orient=HORIZONTAL)
-    age_scale.grid(row=2, column=0, columnspan=3, sticky=W+E)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
+    
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
+    
+    pixel_font = ("Press Start 2P", 12)
+    
+    age_label = Label(root, text="Enter Age:", font=pixel_font, bg='white', fg='black')
+    age_scale = Scale(root, from_=0, to=99, orient="horizontal", font=pixel_font)
     
     def clicked():
-        print("Age :", age_scale.get())
+        print("Age:", age_scale.get())
         root.destroy()
         register()
-    
-    Enter = Button(root, text = "Enter", fg = "black", command=clicked)
-    Enter.grid(row= 5, column=1)
     
     def back() :
         root.destroy()
         home()
         
-    back_btn = Button(root, text = "Back", fg = "black", command=back)
-    back_btn.grid(row= 5, column=2)
+    enter_button = Button(root, text="Enter", fg="black", command=clicked, font=pixel_font, bg='white')
+    back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
+
+    canvas.create_window(bg_image_width//2, 50, window=age_label)
+    canvas.create_window(bg_image_width//2, 90, window=age_scale, width=bg_image_width-50)
+    canvas.create_window(bg_image_width//2 - 60, 200, window=back_button)
+    canvas.create_window(bg_image_width//2 + 60, 200, window=enter_button)
         
     root.mainloop()
         
 def register() :
     root = tk.Tk()
     root.title("Maze Runner | Register")
-    root.geometry('350x200')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
+
+    bg_image = Image.open("Assets/login_bg.jpg")
+    bg_image_width, bg_image_height = bg_image.size
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
     
-    Username = Label(root, text = "Create Username")
-    Username.grid(row=0, column=1)
+    bg_photo = ImageTk.PhotoImage(bg_image)
     
-    UserEntry = Entry(root, width=20, borderwidth= 5)
-    UserEntry.grid(row=1, column=1)
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
     
-    Password = Label(root, text = "Create Password")
-    Password.grid(row=2, column=1)
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
     
-    PwEntry = Entry(root, width=20, borderwidth= 5)
-    PwEntry.grid(row=3, column=1)
+    pixel_font = ("Press Start 2P", 12)
     
-    invalid_user = Label(root, text= "")
-    invalid_user.grid(row=9, column=1)
+    username_label = Label(root, text="Create Username", font=pixel_font, bg='white', fg='black')
+    username_entry = Entry(root, width=20, borderwidth=5, font=pixel_font)
+    password_label = Label(root, text="Create Password", font=pixel_font, bg='white', fg='black')
+    password_entry = Entry(root, width=20, borderwidth=5, font=pixel_font, show="*")
+    invalid_user_label = Label(root, text="", font=pixel_font, bg='white')
+
+    def show_message(message, color):
+        invalid_user_label.config(text=message, fg=color)
+        if message:
+            canvas.create_window(bg_image_width//2, 210, window=invalid_user_label)
+        else:
+            canvas.delete(invalid_user_label)
     
     def clicked() :
-        if (UserEntry.get() == "" or UserEntry.get() == " "):
-            invalid_user.config(text="Username Invalid!")
-        elif (PwEntry.get() == "" or PwEntry.get() == " "):
-            invalid_user.config(text="Password Invalid!")
-        elif (len(PwEntry.get()) < 10):
-            invalid_user.config(text="You need at least 10 characters")
+        if (username_entry.get() == "" or username_entry.get() == " "):
+            show_message("Username Invalid!", 'red')
+        elif (password_entry.get() == "" or password_entry.get() == " "):
+            show_message("Password Invalid!", 'red')
+        elif (len(password_entry.get()) < 10):
+            show_message("You need at least 10 characters", 'red')
         else:
             exists = False
             
-            with open(DATA_FILENAME) as json_file:
-                data = json.load(json_file)
+            if os.path.isfile(DATA_FILENAME):
+                with open(DATA_FILENAME) as json_file:
+                    data = json.load(json_file)
 
-                for x in data:
-                    if (x['username'] == UserEntry.get()):
-                        exists = True
+                    for x in data:
+                        if (x['username'] == username_entry.get()):
+                            exists = True
             
             if (exists):
-                invalid_user.config(text="Username already exist!")
+                show_message("Username already exists!", 'red')
             else:
-                dictionary = {
-                    "username": UserEntry.get(),
-                    "password": PwEntry.get()
+                new_user = {
+                    "username": username_entry.get(),
+                    "password": password_entry.get()
                 }
 
-                a = []
                 if not os.path.isfile(DATA_FILENAME):
-                    a.append(dictionary)
                     with open(DATA_FILENAME, mode='w') as f:
-                        f.write(json.dumps(a, indent=2))
+                        json.dump([new_user], f, indent=2)
                 else:
                     with open(DATA_FILENAME) as feedsjson:
                         feeds = json.load(feedsjson)
 
-                    feeds.append(dictionary)
+                    feeds.append(new_user)
                     with open(DATA_FILENAME, mode='w') as f:
-                        f.write(json.dumps(feeds, indent=2))
+                        json.dump(feeds, f, indent=2)
                 
-                invalid_user.config(text="Registration Successful")
+                show_message("Registration Successful", 'green')
                 root.destroy()
                 register_success()
-    
-    Register = Button(root, text = "Register", fg = "black", command=clicked)
-    Register.grid(row= 8, column=1)
-    
+
     def back() :
         root.destroy()
         age()
+    
+    register_button = Button(root, text="Register", fg="black", command=clicked, font=pixel_font, bg='white')
+    back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
         
-    back_btn = Button(root, text = "Back", fg = "black", command=back)
-    back_btn.grid(row= 8, column=2)
+    canvas.create_window(bg_image_width//2, 50, window=username_label)
+    canvas.create_window(bg_image_width//2, 90, window=username_entry)
+    canvas.create_window(bg_image_width//2, 130, window=password_label)
+    canvas.create_window(bg_image_width//2, 170, window=password_entry)
+    canvas.create_window(bg_image_width//2, 210, window=invalid_user_label)
+    canvas.create_window(bg_image_width//2 - 60, 250, window=back_button)
+    canvas.create_window(bg_image_width//2 + 60, 250, window=register_button)
     
     root.mainloop()
     
 def register_success() :
     root = tk.Tk()
     root.title("Maze Runner | Register Success")
-    root.geometry('350x200')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
 
-    Successful = Label(root, text = "Registration Successful")
-    Successful.grid(row=3, column=1)
+    bg_image = Image.open("Assets/login_bg.jpg")
+    bg_image_width, bg_image_height = bg_image.size
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
     
-    Successful = Label(root, text = "Login to continue")
-    Successful.grid(row=4, column=1)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
+    
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
+    
+    pixel_font = ("Press Start 2P", 12)
+
+    success_label1 = Label(root, text="Registration Successful", font=pixel_font, bg='white', fg='green')
+    success_label2 = Label(root, text="Login to continue", font=pixel_font, bg='white', fg='black')
     
     def clicked() :
         root.destroy()
         login()
         
-    Login = Button(root, text = "Log In", fg = "black", command=clicked)
-    Login.grid(row= 6, column=1)
+    login_button = Button(root, text="Log In", fg="black", command=clicked, font=pixel_font, bg='white')
+    
+    canvas.create_window(bg_image_width//2, 90, window=success_label1)
+    canvas.create_window(bg_image_width//2, 130, window=success_label2)
+    canvas.create_window(bg_image_width//2, 170, window=login_button)
+
+    root.mainloop()
+
+def settings():
+    root = tk.Tk()
+    root.title("Maze Runner | Settings")
+    
+    bg_image = Image.open("Assets/settings page.png")
+    bg_image_width, bg_image_height = bg_image.size
+    new_width = 800
+    new_height = int(bg_image_height * (new_width / bg_image_width))
+    bg_image = bg_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    bg_image_width, bg_image_height = bg_image.size
+    
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
+    
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
+    
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
+    
+    pixel_font = ("Press Start 2P", 16)
+    
+    settings_label = Label(root, text="SETTINGS", font=pixel_font, bg='black', fg='white')
+    
+    def clicked():
+        root.destroy()
+        # volume func
+    
+    def back():
+        root.destroy()
+        menu()
+    
+    vol_label = Label(root, text="Volume", font=pixel_font, bg='black', fg='white')
+    vol_scale = Scale(root, from_=0, to=99, orient="horizontal", font=pixel_font, bg='black', fg='white', troughcolor='grey')
+    
+    enter_button = Button(root, text="Enter", font=pixel_font, bg='black', fg='white', command=clicked)
+    back_button = Button(root, text="Back", font=pixel_font, bg='black', fg='white', command=back)
+    
+    canvas.create_window(bg_image_width // 2, 150, window=settings_label)
+    canvas.create_window(bg_image_width // 2, 250, window=vol_label)
+    canvas.create_window(bg_image_width // 2, 300, window=vol_scale)
+    canvas.create_window(bg_image_width // 2, 400, window=enter_button)
+    canvas.create_window(bg_image_width // 2, 450, window=back_button)
     
     root.mainloop()
 
 def credit() :
     root = tk.Tk()
-    root.title("Maze Runner")
-    root.geometry('1000x600')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
+    root.title("Maze Runner | Credits")
 
-    creators = Label(root, text = "Creators" )
-    creators.grid(column=1, row=0)
+    bg_image = Image.open("Assets/menu_bg.png")
+    bg_image_width, bg_image_height = bg_image.size
+    new_width = 1000
+    new_height = int(bg_image_height * (new_width / bg_image_width)) + 400 
+    bg_image = bg_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    bg_image_width, bg_image_height = bg_image.size
+    
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
+    
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
+    
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
+    
+    pixel_font_large = ("Press Start 2P", 20)
+    pixel_font = ("Press Start 2P", 16)
+    
+    frame = tk.Frame(canvas, bg='black')
+    frame_id = canvas.create_window(bg_image_width//2, bg_image_height, window=frame, anchor="n")
+    
+    credits_text = [
+        ("Creators", ["Girindrashinie", "Kashvinna Anne", "Mithraa Liora", "Tarani Devi"]),
+        ("Game Design and Graphics", ["Kashvinna Anne", "Mithraa Liora", "Tarani Devi"]),
+        ("Programmers", ["Girindrashinie", "Kashvinna Anne", "Mithraa Liora", "Tarani Devi"]),
+        ("Music and Sound", ["Girindrashinie"]),
+        ("Character Design", ["Copilot"]),
+        ("Programming Language", ["Python (Not the snake)"]),
+        ("Modules", ["Tkinter", "Pygame"]),
+    ]
+    
+    for section, names in credits_text:
+        section_label = Label(frame, text=section, font=pixel_font_large, bg='black', fg='white')
+        section_label.pack(pady=(20, 0))
+        separator = ttk.Separator(frame, orient='horizontal')
+        separator.pack(fill='x', padx=10, pady=(0, 20))
+        for name in names:
+            name_label = Label(frame, text=name, font=pixel_font, bg='black', fg='white')
+            name_label.pack()
+    
+    def auto_scroll():
+        canvas.move(frame_id, 0, -1)
+        canvas.update()
+        if canvas.bbox(frame_id)[3] > 0:
+            canvas.after(10, auto_scroll)
+        else:
+            root.destroy()
+            menu()
 
-    creators = Label(root, text = "Girindrashinie\nKashvinna Anne\nMithraa Liora\nTarani Devi" )
-    creators.grid(column=1, row=2)
+    scrollbar = ttk.Scrollbar(root, orient="vertical", command=canvas.yview)
+    canvas.configure(yscrollcommand=scrollbar.set)
+    scrollbar.pack(side="right", fill="y")
 
-    designers = Label(root, text = "Game Design and Graphics" )
-    designers.grid(column=1, row=5)
-
-    designers = Label(root, text = "Kashvinna Anne\nMithraa Liora\nTarani Devi" )
-    designers.grid(column=1, row=6)
-
-    programmers = Label(root, text = "Programmers" )
-    programmers.grid(column=1, row=9)
-
-    programmers = Label(root, text = "Girindrashinie\nKashvinna Anne\nMithraa Liora\nTarani Devi" )
-    programmers.grid(column=1, row=10)
-
-    mns = Label(root, text = "Music and Sound" )
-    mns.grid(column=1, row=14)
-
-    girin = Label(root, text = "Girindrashinie" )
-    girin.grid(column=1, row=15)
-
-    cd = Label(root, text = "Character Design" )
-    cd.grid(column=1, row=16)
-
-    cd = Label(root, text = "Copilot" )
-    cd.grid(column=1, row=17)
-
-    lang = Label(root, text = "Programming Language" )
-    lang.grid(column=1, row=18)
-
-    py = Label(root, text = "Python (Not the snake)" )
-    py.grid(column=1, row=19)
-
-    modules = Label(root, text = "Modules" )
-    modules.grid(column=1, row=20)
-
-    modules = Label(root, text = "Tkinter\nPygame" )
-    modules.grid(column=1, row=21)
-
-    def back() :
-        root.destroy()
-        menu()
-        
-    back_btn = Button(root, text = "Back", fg = "black", command=back)
-    back_btn.grid(column=2, row= 23)
+    root.after(1000, auto_scroll)  # Start the auto-scrolling after 1 second
+    
+    root.mainloop()
 
 def menu() :
     root = tk.Tk()
     root.title("Maze Runner")
-    root.geometry('1000x600')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
+    
+    bg_image = Image.open("Assets/login page.png")
+    bg_image_width, bg_image_height = bg_image.size
+    new_width = 800
+    new_height = int(bg_image_height * (new_width / bg_image_width)) + 200
+    bg_image = bg_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    bg_image_width, bg_image_height = bg_image.size
+    
+    root.geometry(f'{bg_image_width}x{bg_image_height}')
+    
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    
+    canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
+    canvas.pack(fill="both", expand=True)
+    
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
+    
+    pixel_font = ("Press Start 2P", 16)
 
-    menu = Label(root, text = "Main Menu" )
-    menu.grid(column=0, row=1)
+    menu_label = Label(root, text="MAZE RUNNER", font=pixel_font, bg='black', fg='white')
 
-    def clicked() :
+    def start_game():
         root.destroy()
         game()
-            
-    start = Button(root, text = "Play", fg = "black", command=clicked)
-    start.grid(column=0, row=2)
 
-    def clicked() :
-        root.destroy()
-
-    settings = Button(root, text = "Settings", fg = "black", command=clicked)
-    settings.grid(column=0, row=5)
+    def open_settings():
+        #root.destroy()
+        print("x")
     
-    def clicked() :
-        root.destroy()
+    def open_options() :
+        #root.destroy()
+        print("x")
 
-    option = Button(root, text = "Option", fg = "black", command=clicked)
-    option.grid(column=0, row=3)
-
-    def clicked() :
+    def show_credits() :
         root.destroy()
         credit()
 
-    credits = Button(root, text = "Credits", fg = "black", command=clicked)
-    credits.grid(column=0, row=4)
-
-
-    def clicked() :
+    def quit_game() :
         root.destroy()
 
-    quit = Button(root, text = "Quit", fg = "black", command=clicked)
-    quit.grid(column=0, row=6)
+    play_button = Button(root, text="Play", font=pixel_font, bg='black', fg='white', command=start_game)
+    option_button = Button(root, text="Option", font=pixel_font, bg='black', fg='white', command=open_options)
+    settings_button = Button(root, text="Settings", font=pixel_font, bg='black', fg='white', command=open_settings)
+    credits_button = Button(root, text="Credits", font=pixel_font, bg='black', fg='white', command=show_credits)
+    quit_button = Button(root, text="Quit", font=pixel_font, bg='black', fg='white', command=quit_game)
+
+    canvas.create_window(bg_image_width//2, 150, window=menu_label)
+    canvas.create_window(bg_image_width//2, 250, window=play_button)
+    canvas.create_window(bg_image_width//2, 300, window=option_button)
+    canvas.create_window(bg_image_width//2, 350, window=settings_button)
+    canvas.create_window(bg_image_width//2, 400, window=credits_button)
+    canvas.create_window(bg_image_width//2, 450, window=quit_button)
 
     root.mainloop()
 
@@ -360,27 +464,39 @@ def game():
 def home():
     root = tk.Tk()
     root.title("Maze Runner")
-    root.geometry('350x200')
+    root.geometry('500x300')
     root.columnconfigure(0, weight= 1)
     root.columnconfigure(1, weight= 1)
     root.columnconfigure(2, weight= 1)
 
-    Login_Reg = Label(root, text = "Log In/Register" )
-    Login_Reg.grid(column=1, row=0)
+    bg_image = Image.open("Assets/home_bg.jpg")
+    bg_image = bg_image.resize((500, 300), Image.LANCZOS)
+    bg_image = ImageTk.PhotoImage(bg_image)
 
-    def clicked() :
+    # Create a canvas
+    canvas = Canvas(root, width=500, height=300)
+    canvas.pack(fill='both', expand=True)
+
+    canvas.create_image(0, 0, image=bg_image, anchor='nw')
+
+    pixel_font = ("Courier", 12, "bold")
+
+    Login_Reg = Label(root, text="Get Started", bg="white", font=pixel_font)
+    Login_Reg_window = canvas.create_window(250, 50, anchor='center', window=Login_Reg)
+
+    def login_clicked():
         root.destroy()
         login()
         
-    Login = Button(root, text = "Log In", fg = "black", command=clicked)
-    Login.grid(column=0, row=2)
+    Login = Button(root, text="Log In", fg="black", command=login_clicked, font=pixel_font)
+    Login_window = canvas.create_window(250, 100, anchor='center', window=Login)
     
-    def clicked() :
+    def register_clicked():
         root.destroy()
         age()
 
-    Register = Button(root, text = "Register", fg = "black", command=clicked)
-    Register.grid(column=2, row=2)
+    Register = Button(root, text="Register", fg="black", command=register_clicked, font=pixel_font)
+    Register_window = canvas.create_window(250, 140, anchor='center', window=Register)
 
     root.mainloop()
 
