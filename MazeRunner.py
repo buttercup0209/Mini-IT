@@ -1022,10 +1022,10 @@ def level_1():
     main_game()
 
 def level_2():
-    runpy.run_path(path_name='kash2test.py')
+    runpy.run_path(path_name='level_2.py')
 
 def level_3():
-    runpy.run_path(path_name='trial1.py')
+    runpy.run_path(path_name='level_3.py')
 
 def home():
     root = tk.Tk()
