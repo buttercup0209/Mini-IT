@@ -1,23 +1,37 @@
-import pygame 
-import time 
-import random 
-import tkinter as tk
+import tkinter as tk 
 from tkinter import *
 from tkinter import ttk
-import json 
-import os 
+import pygame
+import sys
+import time
+import json
+import os
+import random
 from pygame.locals import *
 from pygame import mixer
 from PIL import Image, ImageTk
 from tkinter import Label, Entry, Button
 from tkinter import Button
+import runpy
 
 DATA_FILENAME = "data.json"
+
+def play_bg_music():
+    pygame.mixer.init()
+    pygame.mixer.music.load("Assets/program_bg_music.mp3")
+    pygame.mixer.music.play(-1)
+
+def stop_bg_music():
+    pygame.mixer.music.stop()
+
+def play_click_sound():
+    click_sound = pygame.mixer.Sound("Assets/button_click_effect.mp3")
+    click_sound.play()
 
 def login(): 
     root = tk.Tk()
     root.title("Maze Runner | Login")
-
+    
     bg_image = Image.open("Assets/login_bg.jpg")
     bg_image_width, bg_image_height = bg_image.size
     root.geometry(f'{bg_image_width}x{bg_image_height}')
@@ -36,25 +50,26 @@ def login():
     password_entry = Entry(root, width=20, borderwidth=5, font=pixel_font, show="*")
     invalid_user_label = Label(root, text="", font=pixel_font, fg='red')
     
-    def clicked() :
+    def clicked():
+        play_click_sound()
         with open(DATA_FILENAME) as json_file:
             data = json.load(json_file)
             for x in data:
-                if (x['username'] == username_entry.get() and x['password'] == password_entry.get()):
-                        root.destroy()
-                        menu()
-                        return
-                else :
+                if x['username'] == username_entry.get() and x['password'] == password_entry.get():
+                    root.destroy()
+                    menu()
+                    return
+                else:
                     invalid_user_label.config(text="Your username or password may be incorrect!")
     
-    def back() :
+    def back():
+        play_click_sound()
         root.destroy()
         home()
-        
+    
     login_button = Button(root, text="Log In", fg="black", command=clicked, font=pixel_font, bg='white')
     back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
 
-    # Position the widgets on the canvas
     canvas.create_window(bg_image_width//2, 50, window=username_label)
     canvas.create_window(bg_image_width//2, 90, window=username_entry)
     canvas.create_window(bg_image_width//2, 130, window=password_label)
@@ -65,10 +80,10 @@ def login():
     
     root.mainloop()
 
-def age() :
+def age():
     root = tk.Tk()
     root.title("Maze Runner | Register")
-
+    
     bg_image = Image.open("Assets/login_bg.jpg")
     bg_image_width, bg_image_height = bg_image.size
     root.geometry(f'{bg_image_width}x{bg_image_height}')
@@ -86,28 +101,29 @@ def age() :
     age_scale = Scale(root, from_=0, to=99, orient="horizontal", font=pixel_font)
     
     def clicked():
-        print("Age:", age_scale.get())
+        play_click_sound()
         root.destroy()
         register()
     
-    def back() :
+    def back():
+        play_click_sound()
         root.destroy()
         home()
-        
+    
     enter_button = Button(root, text="Enter", fg="black", command=clicked, font=pixel_font, bg='white')
     back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
-
+    
     canvas.create_window(bg_image_width//2, 50, window=age_label)
     canvas.create_window(bg_image_width//2, 90, window=age_scale, width=bg_image_width-50)
     canvas.create_window(bg_image_width//2 - 60, 200, window=back_button)
     canvas.create_window(bg_image_width//2 + 60, 200, window=enter_button)
-        
+    
     root.mainloop()
         
-def register() :
+def register():
     root = tk.Tk()
     root.title("Maze Runner | Register")
-
+    
     bg_image = Image.open("Assets/login_bg.jpg")
     bg_image_width, bg_image_height = bg_image.size
     root.geometry(f'{bg_image_width}x{bg_image_height}')
@@ -134,12 +150,13 @@ def register() :
         else:
             canvas.delete(invalid_user_label)
     
-    def clicked() :
-        if (username_entry.get() == "" or username_entry.get() == " "):
+    def clicked():
+        play_click_sound()
+        if username_entry.get() == "" or username_entry.get().isspace():
             show_message("Username Invalid!", 'red')
-        elif (password_entry.get() == "" or password_entry.get() == " "):
+        elif password_entry.get() == "" or password_entry.get().isspace():
             show_message("Password Invalid!", 'red')
-        elif (len(password_entry.get()) < 10):
+        elif len(password_entry.get()) < 10:
             show_message("You need at least 10 characters", 'red')
         else:
             exists = False
@@ -147,26 +164,24 @@ def register() :
             if os.path.isfile(DATA_FILENAME):
                 with open(DATA_FILENAME) as json_file:
                     data = json.load(json_file)
-
                     for x in data:
-                        if (x['username'] == username_entry.get()):
+                        if x['username'] == username_entry.get():
                             exists = True
             
-            if (exists):
+            if exists:
                 show_message("Username already exists!", 'red')
             else:
                 new_user = {
                     "username": username_entry.get(),
                     "password": password_entry.get()
                 }
-
+                
                 if not os.path.isfile(DATA_FILENAME):
                     with open(DATA_FILENAME, mode='w') as f:
                         json.dump([new_user], f, indent=2)
                 else:
                     with open(DATA_FILENAME) as feedsjson:
                         feeds = json.load(feedsjson)
-
                     feeds.append(new_user)
                     with open(DATA_FILENAME, mode='w') as f:
                         json.dump(feeds, f, indent=2)
@@ -174,14 +189,10 @@ def register() :
                 show_message("Registration Successful", 'green')
                 root.destroy()
                 register_success()
-
-    def back() :
-        root.destroy()
-        age()
     
     register_button = Button(root, text="Register", fg="black", command=clicked, font=pixel_font, bg='white')
-    back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
-        
+    back_button = Button(root, text="Back", fg="black", command=lambda: [root.destroy(), age()], font=pixel_font, bg='white')
+    
     canvas.create_window(bg_image_width//2, 50, window=username_label)
     canvas.create_window(bg_image_width//2, 90, window=username_entry)
     canvas.create_window(bg_image_width//2, 130, window=password_label)
@@ -192,10 +203,10 @@ def register() :
     
     root.mainloop()
     
-def register_success() :
+def register_success():
     root = tk.Tk()
     root.title("Maze Runner | Register Success")
-
+    
     bg_image = Image.open("Assets/login_bg.jpg")
     bg_image_width, bg_image_height = bg_image.size
     root.geometry(f'{bg_image_width}x{bg_image_height}')
@@ -208,76 +219,86 @@ def register_success() :
     canvas.create_image(0, 0, image=bg_photo, anchor="nw")
     
     pixel_font = ("Press Start 2P", 12)
-
+    
     success_label1 = Label(root, text="Registration Successful", font=pixel_font, bg='white', fg='green')
     success_label2 = Label(root, text="Login to continue", font=pixel_font, bg='white', fg='black')
     
-    def clicked() :
+    def clicked():
+        play_click_sound()
         root.destroy()
         login()
-        
+    
     login_button = Button(root, text="Log In", fg="black", command=clicked, font=pixel_font, bg='white')
     
     canvas.create_window(bg_image_width//2, 90, window=success_label1)
     canvas.create_window(bg_image_width//2, 130, window=success_label2)
     canvas.create_window(bg_image_width//2, 170, window=login_button)
-
+    
     root.mainloop()
 
 def settings():
     root = tk.Tk()
     root.title("Maze Runner | Settings")
-    
-    bg_image = Image.open("Assets/settings page.png")
+
+    bg_image = Image.open("Assets/settings_bg.png")
     bg_image_width, bg_image_height = bg_image.size
     new_width = 800
     new_height = int(bg_image_height * (new_width / bg_image_width))
     bg_image = bg_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
     bg_image_width, bg_image_height = bg_image.size
-    
+
     root.geometry(f'{bg_image_width}x{bg_image_height}')
-    
+
     bg_photo = ImageTk.PhotoImage(bg_image)
-    
+
     canvas = tk.Canvas(root, width=bg_image_width, height=bg_image_height)
     canvas.pack(fill="both", expand=True)
-    
     canvas.create_image(0, 0, image=bg_photo, anchor="nw")
-    
+
     pixel_font = ("Press Start 2P", 16)
-    
+
     settings_label = Label(root, text="SETTINGS", font=pixel_font, bg='black', fg='white')
-    
-    def clicked():
+
+    def adjust_volume(val):
+        volume = int(val)
+        pygame.mixer.music.set_volume(volume / 100)
+
+    def logout():
+        play_click_sound()
         root.destroy()
-        # volume func
-    
+        home()
+
     def back():
+        play_click_sound()
         root.destroy()
         menu()
-    
+
     vol_label = Label(root, text="Volume", font=pixel_font, bg='black', fg='white')
-    vol_scale = Scale(root, from_=0, to=99, orient="horizontal", font=pixel_font, bg='black', fg='white', troughcolor='grey')
-    
-    enter_button = Button(root, text="Enter", font=pixel_font, bg='black', fg='white', command=clicked)
+
+    current_volume = pygame.mixer.music.get_volume() * 100
+
+    vol_scale = Scale(root, from_=0, to=100, orient="horizontal", length=400, font=pixel_font, bg='black', fg='white', troughcolor='grey', command=adjust_volume)
+    vol_scale.set(current_volume)
+
+    logout_button = Button(root, text="Logout", font=pixel_font, bg='black', fg='white', command=logout)
     back_button = Button(root, text="Back", font=pixel_font, bg='black', fg='white', command=back)
-    
+
     canvas.create_window(bg_image_width // 2, 150, window=settings_label)
     canvas.create_window(bg_image_width // 2, 250, window=vol_label)
     canvas.create_window(bg_image_width // 2, 300, window=vol_scale)
-    canvas.create_window(bg_image_width // 2, 400, window=enter_button)
-    canvas.create_window(bg_image_width // 2, 450, window=back_button)
-    
+    canvas.create_window(bg_image_width // 2, 450, window=logout_button)
+    canvas.create_window(bg_image_width // 2, 500, window=back_button)
+
     root.mainloop()
 
-def credit() :
+def credit():
     root = tk.Tk()
     root.title("Maze Runner | Credits")
-
+    
     bg_image = Image.open("Assets/menu_bg.png")
     bg_image_width, bg_image_height = bg_image.size
     new_width = 1000
-    new_height = int(bg_image_height * (new_width / bg_image_width)) + 400 
+    new_height = int(bg_image_height * (new_width / bg_image_width)) + 400
     bg_image = bg_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
     bg_image_width, bg_image_height = bg_image.size
     
@@ -323,16 +344,16 @@ def credit() :
         else:
             root.destroy()
             menu()
-
+    
     scrollbar = ttk.Scrollbar(root, orient="vertical", command=canvas.yview)
     canvas.configure(yscrollcommand=scrollbar.set)
     scrollbar.pack(side="right", fill="y")
-
-    root.after(1000, auto_scroll)  # Start the auto-scrolling after 1 second
+    
+    root.after(1000, auto_scroll)
     
     root.mainloop()
 
-def menu() :
+def menu():
     root = tk.Tk()
     root.title("Maze Runner")
     
@@ -353,45 +374,253 @@ def menu() :
     canvas.create_image(0, 0, image=bg_photo, anchor="nw")
     
     pixel_font = ("Press Start 2P", 16)
-
+    
     menu_label = Label(root, text="MAZE RUNNER", font=pixel_font, bg='black', fg='white')
-
+    
     def start_game():
+        play_click_sound()
+        stop_bg_music()
         root.destroy()
         game()
-
-    def open_settings():
-        #root.destroy()
-        print("x")
     
-    def open_options() :
-        #root.destroy()
-        print("x")
-
-    def show_credits() :
+    def open_settings():
+        play_click_sound()
+        root.destroy()
+        settings()
+    
+    def open_how_to_play():
+        play_click_sound()
+        root.destroy()
+        how_to_play()
+    
+    def show_credits():
+        play_click_sound()
         root.destroy()
         credit()
-
-    def quit_game() :
+    
+    def quit_game():
+        play_click_sound()
         root.destroy()
-
+    
     play_button = Button(root, text="Play", font=pixel_font, bg='black', fg='white', command=start_game)
-    option_button = Button(root, text="Option", font=pixel_font, bg='black', fg='white', command=open_options)
+    how_to_play_button = Button(root, text="How to Play", font=pixel_font, bg='black', fg='white', command=open_how_to_play)
     settings_button = Button(root, text="Settings", font=pixel_font, bg='black', fg='white', command=open_settings)
     credits_button = Button(root, text="Credits", font=pixel_font, bg='black', fg='white', command=show_credits)
     quit_button = Button(root, text="Quit", font=pixel_font, bg='black', fg='white', command=quit_game)
-
+    
     canvas.create_window(bg_image_width//2, 150, window=menu_label)
     canvas.create_window(bg_image_width//2, 250, window=play_button)
-    canvas.create_window(bg_image_width//2, 300, window=option_button)
+    canvas.create_window(bg_image_width//2, 300, window=how_to_play_button)
     canvas.create_window(bg_image_width//2, 350, window=settings_button)
     canvas.create_window(bg_image_width//2, 400, window=credits_button)
     canvas.create_window(bg_image_width//2, 450, window=quit_button)
-
+    
     root.mainloop()
 
+def how_to_play():
+    root = tk.Tk()
+    root.title("Maze Runner | How to Play")
+    
+    bg_image = Image.open("Assets/how_to_play_bg.jpg")
+    bg_image_width, bg_image_height = bg_image.size
+    new_height = int(bg_image_height * 0.75)
+    bg_image = bg_image.resize((bg_image_width, new_height), Image.Resampling.LANCZOS)
+    bg_image_width, new_height = bg_image.size
+    
+    root.geometry(f'{bg_image_width}x{new_height}')
+    
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    
+    canvas = tk.Canvas(root, width=bg_image_width, height=new_height)
+    canvas.pack(fill="both", expand=True)
+    canvas.create_image(0, 0, image=bg_photo, anchor="nw")
+    
+    pixel_font = ("Press Start 2P", 12)
+    
+    instructions = [
+        ("Arrow Up - Move upwards", "arrow_up.png"),
+        ("Arrow Down - Move downwards", "arrow_down.png"),
+        ("Arrow Left - Move to the left", "arrow_left.png"),
+        ("Arrow Right - Move to the right", "arrow_right.png"),
+        ("Space Bar - Interact / Jump", "space_key.png")
+    ]
+    
+    y_position = new_height // 2 - 150
+    x_offset = -50
+    
+    for text, icon in instructions:
+        icon_image = Image.open(f"Assets/{icon}")
+        icon_image = icon_image.resize((50, 50), Image.Resampling.LANCZOS)
+        icon_photo = ImageTk.PhotoImage(icon_image)
+        icon_label = Label(root, image=icon_photo, bg='white')
+        icon_label.image = icon_photo
+        text_label = Label(root, text=text, font=pixel_font, bg='white', fg='black')
+        
+        canvas.create_window(bg_image_width//2 - 100 + x_offset, y_position, window=icon_label)
+        canvas.create_window(bg_image_width//2 + 100 + x_offset, y_position, window=text_label)
+        y_position += 70
+    
+    def back():
+        play_click_sound()
+        root.destroy()
+        menu()
+    
+    back_button = Button(root, text="Back", fg="black", command=back, font=pixel_font, bg='white')
+    canvas.create_window(bg_image_width//2, y_position + 30, window=back_button)
+    
+    root.mainloop()
+    
 def game():
     pygame.init()
+    pygame.font.init()
+    
+    clock = pygame.time.Clock()
+    FPS = 200
+
+    screen_width, screen_height = 1050, 700
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    pygame.display.set_caption("Maze Runner")
+
+    white = (255, 255, 255)
+    gray = (128, 128, 128)
+
+    room_width, room_height = 1050, 700
+    wall_thickness = 10
+
+    walls = [
+        pygame.Rect(0, 0, room_width, wall_thickness),
+        pygame.Rect(0, 0, wall_thickness, room_height),
+        pygame.Rect(room_width - wall_thickness, 0, wall_thickness, room_height),
+        pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness),
+    ]
+
+    ceiling = pygame.Rect(0, 0, room_width, wall_thickness)
+    floor = pygame.Rect(0, room_height - wall_thickness, room_width, wall_thickness)
+
+    # Assets
+    hall = pygame.image.load(os.path.join('Assets', 'house.jpeg')).convert()
+    hall = pygame.transform.scale(hall, (room_width, room_height))
+
+    interaction_area_width, interaction_area_height = 130, 150
+    interaction_area = pygame.Rect(
+        screen_width - interaction_area_width - wall_thickness,
+        screen_height - interaction_area_height - wall_thickness,
+        interaction_area_width,
+        interaction_area_height
+    )
+
+    font = pygame.font.Font(None, 36)
+    text_position = (
+        screen_width // 2 - 150,
+        screen_height - 50
+    )
+
+    class Player(pygame.sprite.Sprite):
+        def __init__(self):
+            super().__init__()
+            self.images = [
+                pygame.image.load(os.path.join('Assets', 'girl.png')).convert_alpha(),
+                pygame.image.load(os.path.join('Assets', 'girl_move.png')).convert_alpha()
+            ]
+            self.images = [pygame.transform.scale(img, (200, 200)) for img in self.images]
+            self.current_image = 0
+            self.image = self.images[self.current_image]
+            self.rect = self.image.get_rect()
+            self.rect.center = (room_width - 200 , room_height - 100)
+            self.animation_time = 0.2
+            self.current_time = 0
+
+        def update(self):
+            keys = pygame.key.get_pressed()
+            move_distance = 2
+            moving = False
+            if keys[pygame.K_LEFT]:
+                if self.rect.bottom >= room_height - 100 and self.rect.left > wall_thickness:
+                    self.rect.x -= move_distance
+                    moving = True
+            if keys[pygame.K_RIGHT]:
+                if self.rect.bottom >= room_height - 100 and self.rect.right < room_width - wall_thickness:
+                    self.rect.x += move_distance
+                    moving = True
+            if keys[pygame.K_UP]:
+                if self.rect.centerx > room_width // 2 - 50 and self.rect.centerx < room_width // 2 + 50 and self.rect.top > wall_thickness and self.rect.top > 310:
+                    self.rect.y -= move_distance
+                    moving = True
+            if keys[pygame.K_DOWN]:
+                if self.rect.centerx > room_width // 2 - 50 and self.rect.centerx < room_width // 2 + 50 and self.rect.bottom < room_height - wall_thickness:
+                    self.rect.y += move_distance
+                    moving = True
+
+            if moving:
+                self.current_time += clock.get_time() / 1000
+                if self.current_time >= self.animation_time:
+                    self.current_image = (self.current_image + 1) % len(self.images)
+                    self.image = self.images[self.current_image]
+                    self.current_time = 0
+
+    def show_loading_screen():
+        loading_screen = pygame.display.set_mode((screen_width, screen_height))
+        loading_screen.fill(white)
+        font = pygame.font.Font("./Assets/PixelifySans-Regular.ttf", 36)
+        new_window_texts = ["Loading room", "Hiding monsters", "Preparing your doom" , "Loading... The haunted house is just tidying up for you.", "Hang tight... Baldy is just testing his chainsaw!"]
+        random_text = random.choice(new_window_texts)
+        text_surf = font.render(random_text, True, (0, 0, 0))
+        loading_screen.blit(text_surf, (screen_width // 2 - text_surf.get_width() // 2, screen_height // 2 - text_surf.get_height() // 2))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+
+    def new_game():
+        screen.fill(white)
+        font = pygame.font.Font("./Assets/PixelifySans-Regular.ttf", 36)
+        game_text = font.render("Welcome to level 1!", True, (0, 0, 0))
+        screen.blit(game_text, (screen_width // 2 - game_text.get_width() // 2, screen_height // 2 - game_text.get_height() // 2))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+        level_1()
+
+    player = Player()
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(player)
+    interaction_text_displayed = False
+    new_window_opened = False
+
+    running = True
+    while running:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and interaction_text_displayed:
+                show_loading_screen()
+                new_game()
+                new_window_opened = True
+
+        all_sprites.update()
+
+        pygame.draw.rect(screen, gray, ceiling)
+        pygame.draw.rect(screen, gray, floor)
+        screen.blit(hall, (0, 0))
+        for wall in walls:
+            pygame.draw.rect(screen, gray, wall)
+
+        all_sprites.draw(screen)
+
+        if player.rect.top <= 310 and room_width // 2 - 50 < player.rect.centerx < room_width // 2 + 50:
+            interaction_text_displayed = True
+            font = pygame.font.Font("./Assets/PixelifySans-Regular.ttf", 36)
+            interaction_text = font.render("Click space to enter", True, white)
+            screen.blit(interaction_text, text_position)
+        else:
+            interaction_text_displayed = False
+
+        pygame.display.flip()
+
+    pygame.quit()
+
+def level_1():
+    print("level 1")
+    pygame.init()
+    pygame.font.init()
 
     clock = pygame.time.Clock()
     FPS = 200
@@ -646,7 +875,8 @@ def game():
             next_level_message = font.render("Next Level", True, (0, 0, 0))
             next_level_window.blit(next_level_message, (screen_width // 2 - next_level_message.get_width() // 2, screen_height // 2 - next_level_message.get_height() // 2))
             pygame.display.flip()
-            pygame.time.wait(1000)  
+            pygame.time.wait(1000)
+            level_2()
 
         world_data = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -791,19 +1021,26 @@ def game():
 
     main_game()
 
+def level_2():
+    runpy.run_path(path_name='kash2test.py')
+
+def level_3():
+    runpy.run_path(path_name='trial1.py')
+
 def home():
     root = tk.Tk()
     root.title("Maze Runner")
+    play_bg_music()
+
     root.geometry('500x300')
-    root.columnconfigure(0, weight= 1)
-    root.columnconfigure(1, weight= 1)
-    root.columnconfigure(2, weight= 1)
+    root.columnconfigure(0, weight=1)
+    root.columnconfigure(1, weight=1)
+    root.columnconfigure(2, weight=1)
 
     bg_image = Image.open("Assets/home_bg.jpg")
     bg_image = bg_image.resize((500, 300), Image.LANCZOS)
     bg_image = ImageTk.PhotoImage(bg_image)
 
-    # Create a canvas
     canvas = Canvas(root, width=500, height=300)
     canvas.pack(fill='both', expand=True)
 
@@ -815,13 +1052,15 @@ def home():
     Login_Reg_window = canvas.create_window(250, 50, anchor='center', window=Login_Reg)
 
     def login_clicked():
+        play_click_sound()
         root.destroy()
         login()
-        
+
     Login = Button(root, text="Log In", fg="black", command=login_clicked, font=pixel_font)
     Login_window = canvas.create_window(250, 100, anchor='center', window=Login)
-    
+
     def register_clicked():
+        play_click_sound()
         root.destroy()
         age()
 
