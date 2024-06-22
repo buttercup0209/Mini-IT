@@ -5,6 +5,7 @@ from pygame.locals import *
 from pygame import mixer
 
 pygame.init()
+pygame.font.init()
 
 clock = pygame.time.Clock()
 FPS = 200
@@ -15,6 +16,7 @@ pygame.display.set_caption("Maze Runner")
 
 white = (255, 255, 255)
 gray = (255, 255, 255)
+brown = (100,40,0)
 
 room_width, room_height = 1050, 700
 wall_thickness = 10
@@ -35,6 +37,7 @@ hall = pygame.transform.scale(hall, (room_width, room_height))
 door_unlocked_image = pygame.image.load(os.path.join('./Assets/Door.png')).convert_alpha()
 door_unlocked_image = pygame.transform.scale(door_unlocked_image, (150, 289))
 
+#Positions for the three doors
 fixed_door_position = (450, 70)
 door_positions = [fixed_door_position] + [(150, 70), (750, 70)]
 random.shuffle(door_positions[1:])
@@ -118,6 +121,18 @@ def next_level():
     pygame.time.wait(1000)
     pygame.quit()
     level_2()
+    
+class Button:
+    def __init__(self,image,x,y):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+    def is_clicked(self, pos):
+        return self.rect.collidepoint(pos)
 
 def level_2() :
 
@@ -146,6 +161,14 @@ def level_2() :
     snowball_img = pygame.transform.scale(snowball_img, (snowball_img.get_width() * 1.5, snowball_img.get_height() * 1.5))  
     bg_img = pygame.image.load('./Assets/ice2.jpg')
     restart_img = pygame.image.load('./Assets/restart_btn.png')
+    
+    pygame.mixer.music.load('music.wav')
+    pygame.mixer.music.play(-1, 0.0, 5000)
+    
+    coin_fx = pygame.mixer.Sound('coin.wav')
+    coin_fx.set_volume(2.5)
+    jump_fx = pygame.mixer.Sound('jump.wav')
+    jump_fx.set_volume(2.5)
 
     class Player():
         def __init__(self, x, y):
@@ -331,43 +354,11 @@ def level_2() :
 
         def draw(self):
             screen.blit(self.image, self.rect)
-
-    class Button():
-        def __init__(self, x, y, image):
-            self.image = image
-            self.rect = self.image.get_rect()
-            self.rect.x = x
-            self.rect.y = y
-            self.clicked = False
-
-        def draw(self):
-            action = False
-
-            pos = pygame.mouse.get_pos()
-
-            if self.rect.collidepoint(pos):
-                if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
-                    action = True
-                    self.clicked = True
-
-            if pygame.mouse.get_pressed()[0] == 0:
-                self.clicked = False
-
-            screen.blit(self.image, self.rect)
-
-            return action
-
+            
     def draw_text(text, font, text_col, x, y):
         font = pygame.font.Font("./Assets/PixelifySans-Regular.ttf", 36)
         img = font.render(text, True, text_col)
         screen.blit(img, (x, y))
-
-    def reset_game():
-        global game_over, score, world, player
-        player.reset(45, screen_height - 130)
-        world = World(world_data)
-        game_over = 0
-        score = 0
 
     def next_level_screen(): 
         font = pygame.font.Font("./Assets/PixelifySans-Regular.ttf", 36)
@@ -406,10 +397,18 @@ def level_2() :
     world = World(world_data)
     door = Door(screen_width - tile_size * 3.1, screen_height - tile_size * 17.6)
 
-    restart_button = Button(screen_width // 2 - 65, screen_height // 2, restart_img)
+    restart_button = Button(restart_img, 297, 362)
 
     run = True
     score = 0  
+    show_restart_button = False
+
+    def restart_game():
+        nonlocal game_over, score, show_restart_button
+        game_over = 0
+        player.rect.x = 45
+        player.rect.y = screen_height - 130  
+        show_restart_button = False
 
     while run:
         clock.tick(fps)
@@ -427,11 +426,11 @@ def level_2() :
             score += 1
         draw_text('X '  + str(score), font_score, black, tile_size - 3, 4)
 
-        game_over = player.update(game_over)
-
         if game_over == -1:
-            if restart_button.draw():
-                reset_game()
+            show_restart_button = True
+            restart_button.draw(screen)
+
+        game_over = player.update(game_over)
 
         if player.rect.colliderect(door.rect):
             next_level_screen()
@@ -440,6 +439,11 @@ def level_2() :
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    mouse_pos = pygame.mouse.get_pos()
+                    if restart_button.is_clicked(mouse_pos):
+                        restart_game()
 
         pygame.display.update()
 
@@ -455,12 +459,12 @@ reset_level()
 
 running = True
 while running:
+
     clock.tick(FPS)
-    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if showing_note and button_rect.collidepoint(event.pos):
@@ -481,15 +485,15 @@ while running:
                             next_level()
 
     all_sprites.update()
-    
     screen.fill(white)
-    pygame.draw.rect(screen, gray, ceiling)
+    pygame.draw.rect(screen, brown, ceiling)
     pygame.draw.rect(screen, gray, floor)
-    screen.blit(hall,(0,0))
-    
+    screen.blit(hall, (0, 0))
+
     for wall in walls:
-        pygame.draw.rect(screen, gray, wall)
-        
+        pygame.draw.rect(screen, brown, wall)
+    
+    # Draw the doors
     for pos in door_positions:
         screen.blit(door_unlocked_image, pos)
 
@@ -503,9 +507,10 @@ while running:
         if player.rect.colliderect(door_rect) and not show_chainsaw_guy and not show_next_level:
             message = font.render("Click space to enter", True, (0, 0, 0))
             screen.blit(message, (door_pos[0], door_pos[1] - 30))
-    
+
+    # Draw the message if the player is in the trigger area
     if show_message:
-        message = font.render("Click note to interact", True, (0, 0, 0))
+        message = font.render("Click note to read it.", True, (0, 0, 0))
         screen.blit(message, text_position)
 
     if showing_note:
@@ -517,11 +522,14 @@ while running:
     if show_chainsaw_guy:
         screen.blit(chainsaw_guy_image, chainsaw_guy_rect)
         screen.blit(restart_btn_image, restart_btn_rect)
-    
+
     all_sprites.draw(screen)
 
     pygame.display.flip()
-
 pygame.quit()
+
+    
+
+
 
 
